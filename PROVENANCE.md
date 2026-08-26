@@ -8,7 +8,8 @@ sources and reproduce every step in between. It is deliberately exhaustive.
 ## 1. Upstream sources
 
 The core is **SHAKTI E-class**, an open-source RV32IMAC processor from the SHAKTI project at
-**IIT Madras**. It is written in **Bluespec SystemVerilog (BSV)**, not Verilog — the Verilog in this
+**IIT Madras** — upstream: **https://gitlab.com/shaktiproject/cores/e-class**
+(project home: https://shakti.org.in/). It is written in **Bluespec SystemVerilog (BSV)**, not Verilog — the Verilog in this
 repository is *generated* from that BSV (see §3).
 
 All upstream repositories were vendored at explicit commit SHAs:

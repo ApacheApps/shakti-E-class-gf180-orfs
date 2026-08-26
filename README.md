@@ -21,6 +21,70 @@ deck.**
 
 ---
 
+## The processor: SHAKTI E-class
+
+**E-class** is the embedded-class core of the [**SHAKTI**](https://shakti.org.in/) processor family
+from **IIT Madras** — an open RISC-V program developed entirely in **Bluespec SystemVerilog (BSV)**.
+
+> *"This is the embedded class processor, built around a 3-stage in-order core. It is aimed at
+> low-power and low compute applications and is capable of running basic RTOSs like FreeRTOS and
+> Zephyr. Typical market segments include: smart-cards, IoT sensors, motor-controls and robotic
+> platforms."* — [upstream README](https://gitlab.com/shaktiproject/cores/e-class)
+
+### Source
+
+| what | where |
+|---|---|
+| **E-class core (upstream)** | **https://gitlab.com/shaktiproject/cores/e-class** |
+| SHAKTI project | https://shakti.org.in/ · https://gitlab.com/shaktiproject |
+| fabrics (AXI4-Lite interconnect) | https://gitlab.com/shaktiproject/uncore/fabrics |
+| common_bsv | https://gitlab.com/shaktiproject/common_bsv |
+| common_verilog | https://gitlab.com/shaktiproject/common_verilog |
+| devices | https://gitlab.com/shaktiproject/uncore/devices |
+| verification environment | https://gitlab.com/shaktiproject/verification_environment/verification |
+| benchmarks | https://gitlab.com/shaktiproject/cores/benchmarks |
+
+Exact pinned commit SHAs, licenses and dates for all seven are in
+[`PROVENANCE.md` §1](PROVENANCE.md). The BSV is **BSD-3-Clause** (IIT Madras, 2018); the Verilog in
+`rtl/generated/` is generated from it and is therefore a derivative work — see
+[`NOTICE`](NOTICE).
+
+### Configuration hardened here
+
+| | |
+|---|---|
+| ISA | **RV32IMAC** (32-bit, integer + multiply/divide + atomics + compressed) |
+| Pipeline | **3-stage, in-order** — fetch/decode · execute · memory/writeback |
+| Privilege | Machine + **User** mode, with user-level traps |
+| Memory protection | **PMP**, 4 regions |
+| Debug triggers | 2 |
+| Performance counters | 4 |
+| Bus | **two AXI4-Lite masters** — `master_i` (fetch) and `master_d` (data), 32-bit |
+| Multiplier / divider | sequential (`MUL=asic`), 32 divide stages |
+| Boot vector | `resetpc`, a **32-bit runtime input port** — strappable at SoC level |
+| Reset | `RST_N`, asynchronous, **any phase** (synchronized internally — see below) |
+| Top module | `eclass_top` (our wrapper) around `mkeclass_axi4lite` |
+| Ports | 57 ports / 421 bits |
+
+### What E-class is *not* — measured, and it surprised us
+
+Upstream documentation is optimistic in places. Verified against the generated RTL:
+
+- **No caches, no TCM, no MMU, no on-chip SRAM or ROM.** The generated RTL instantiates only
+  `FIFO2` ×15, `FIFOL1` ×8, `FIFO1` ×1 and one `RegFile` (a 32×32 flop array). Upstream cache
+  support is issue #68, open since 2019. **A usable SoC must supply memory externally.**
+- **No AHB anywhere** — a clean zero-hit grep across `fabrics/`, `devices/` and `e-class/src/`.
+- **One** external interrupt input. CLINT and PLIC live outside the core.
+- **No FPU, no supervisor mode, no branch predictor.** The Makefile ISA parser emits only
+  RV32/RV64/M/A/C, so the `spfpu`/`supervisor`/`bpu` ifdefs are unreachable. **Upstream text claiming
+  I/M/A/F/D/C does not apply to this configuration.**
+- **Debug is disabled here**, deliberately: `DEBUG=enable` makes `EBREAK` report `mcause=2` instead
+  of `3`. We sign off the *compliant* configuration. See [`DISCLAIMERS.md`](DISCLAIMERS.md).
+
+The upstream core is **frozen at 2019-12-17** (tag `1.10.2`); the later `89-fix-compilation` branch
+touches only build infrastructure, no `src/` files.
+
+
 ## Results
 
 | metric | value | conditions |
@@ -108,7 +172,7 @@ reading of the license chain, **not legal advice**.
 
 ## Acknowledgements
 
-[SHAKTI](https://shakti.org.in/) / IIT Madras (E-class core) · [OpenROAD & ORFS](https://theopenroadproject.org/) ·
+[SHAKTI](https://shakti.org.in/) / IIT Madras — [**E-class core**](https://gitlab.com/shaktiproject/cores/e-class) · [OpenROAD & ORFS](https://theopenroadproject.org/) ·
 [Yosys](https://github.com/YosysHQ/yosys) · [OpenSTA](https://github.com/parallaxsw/OpenSTA) ·
 [KLayout](https://www.klayout.de/) · [GlobalFoundries GF180MCU PDK](https://gf180mcu-pdk.readthedocs.io/) ·
 [Bluespec Compiler](https://github.com/B-Lang-org/bsc) · [RISCOF](https://github.com/riscv-software-src/riscof) ·
