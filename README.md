@@ -81,10 +81,16 @@ config/            ORFS configs, SDC constraints, the two platform DRC fixes
 scripts/           RTL generation, sign-off STA, DRC/LVS, audit scripts
 sim/               Verilator testbenches (smoke, RISCOF arch test, reset synchronizer)
 reports/           sign-off reports, PV summaries, cell policy, closure dossier
-docs/              upstream provenance
+docs/              upstream provenance, LVS flow
+collateral/        SIGN-OFF COLLATERAL, in-repo:
+  gds/               filled (tapeout) + unfilled (LVS) GDS, gzipped
+  def/  spef/        routed DEF and post-route parasitics, gzipped
+  views/             abstract LEF + per-corner Liberty (ss/tt/ff) for hard-macro integration
 ```
 
-Large binaries (GDS, SPEF, DEF) are attached as **release assets**, not committed.
+**Everything is in the repository** — a single `git clone` gets the RTL, the configs, the scripts and
+the sign-off collateral. Large artifacts are gzipped (217 MB raw → ~34 MB), and `collateral/SHA256SUMS`
+covers them. See [`collateral/README.md`](collateral/README.md) for which GDS to use when.
 
 ## Start here
 

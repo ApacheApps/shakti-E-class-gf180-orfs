@@ -27,10 +27,13 @@ done
 
 say ""
 say "=== 2. credentials / keys / personal data ==="
-python3 - "$ROOT" <<'PY'
-import pathlib, re, sys
+python3 - "$ROOT" <<'PYEOF'
+import pathlib, re, sys, gzip
+
 R = pathlib.Path(sys.argv[1])
-pats = {
+
+# HIGH-SIGNAL patterns: literal enough that a match in ANY content -- text or binary -- is real.
+STRICT = {
  "AWS access key":    r"AKIA[0-9A-Z]{16}",
  "GitHub token":      r"gh[pousr]_[A-Za-z0-9]{16,}",
  "Anthropic key":     r"sk-ant-[A-Za-z0-9_\-]{10,}",
@@ -38,26 +41,51 @@ pats = {
  "Google API key":    r"AIza[0-9A-Za-z_\-]{35}",
  "Slack token":       r"xox[baprs]-[A-Za-z0-9\-]{10,}",
  "private key block": r"-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY",
- "password assign":   r"(?i)\b(password|passwd|pwd)\s*[:=]\s*['\"][^'\"]{3,}",
- "token assign":      r"(?i)\b(api[_-]?key|secret|token|credential)\s*[:=]\s*['\"][^'\"]{8,}",
- "bearer header":     r"(?i)authorization:\s*bearer\s+\S+",
- "email address":     r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}",
- "IPv4 address":      r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
- "ssh key path":      r"(?i)(id_rsa|id_ed25519|\.ssh/)",
+ "host path":         r"/Users/[A-Za-z0-9._-]+",
 }
-bad=0
-for f in R.rglob("*"):
+# LOOSE patterns: meaningful in TEXT only. Applied to binary they match random byte noise --
+# gzip streams alone produced dozens of fake "emails" like 'C@u.Uy'. Never apply these to binary.
+LOOSE = {
+ "password assign": r"(?i)\b(password|passwd|pwd)\s*[:=]\s*['\"][^'\"]{3,}",
+ "token assign":    r"(?i)\b(api[_-]?key|secret|token|credential)\s*[:=]\s*['\"][^'\"]{8,}",
+ "bearer header":   r"(?i)authorization:\s*bearer\s+\S+",
+ "email address":   r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}",
+ "IPv4 address":    r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
+ "ssh key path":    r"(?i)(id_rsa|id_ed25519|\.ssh/)",
+}
+
+def content_of(f):
+    """Return (bytes, note). .gz is DECOMPRESSED so we scan what it actually carries."""
+    try:
+        if f.suffix == ".gz":
+            with gzip.open(f, "rb") as fh:
+                return fh.read(64 * 1024 * 1024), " (decompressed)"
+        return f.read_bytes(), ""
+    except Exception:
+        return b"", " (unreadable)"
+
+def is_text(b):
+    return b"\x00" not in b[:8192]
+
+bad = 0
+for f in sorted(R.rglob("*")):
     if not f.is_file() or "/.git/" in str(f): continue
-    if f.name == "prerelease_scan.sh": continue   # the scanner holds the patterns by definition
-    try: t=f.read_text(errors="ignore")
-    except Exception: continue
-    for name,p in pats.items():
-        for m in re.finditer(p,t):
-            print(f"  FAIL  [{name}] {f.relative_to(R)}: {m.group(0)[:60]!r}")
-            bad=1
+    if f.name == "prerelease_scan.sh": continue   # holds the patterns by definition
+    raw, note = content_of(f)
+    if not raw: continue
+    txt = raw.decode("utf-8", errors="ignore")
+    text_like = is_text(raw)
+    pats = dict(STRICT)
+    if text_like: pats.update(LOOSE)
+    for name, pat in pats.items():
+        m = re.search(pat, txt)
+        if m:
+            kind = "text" if text_like else "BINARY"
+            print(f"  FAIL  [{name}] {f.relative_to(R)}{note} ({kind}): {m.group(0)[:60]!r}")
+            bad = 1
 print("  ok    no credential/PII pattern matched" if not bad else "")
 sys.exit(bad)
-PY
+PYEOF
 [ $? -ne 0 ] && fail=1
 
 say ""

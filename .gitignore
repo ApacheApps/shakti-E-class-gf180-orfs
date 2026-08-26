@@ -1,17 +1,21 @@
-# Large binaries ship as GitHub Release assets, not in the repository
+# Uncompressed flow outputs are not committed — the COMPRESSED signoff collateral under
+# collateral/ is (gds/spef/def gzipped, plus abstract LEF/Liberty views).
 *.gds
-*.gds.gz
 *.spef
-*.spef.gz
 *.def
 *.odb
 *.lyrdb
+!collateral/**/*.gz
+!collateral/views/*
 
-# Flow outputs
+# Flow working directories
 results/
 objects/
 logs/
 reports/pv/*/
+
+# Local staging for GitHub Release assets (superseded by collateral/, kept out of git)
+release_assets/
 
 # Local noise
 .DS_Store
@@ -19,6 +23,3 @@ __pycache__/
 *.pyc
 *.bak
 obj_*/
-
-# Release assets are attached to the GitHub Release, never committed
-release_assets/

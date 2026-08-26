@@ -92,6 +92,13 @@ rule, so deck-derived density numbers are not compliance evidence either way.
 The wrapper run is **+3 cycles** — exactly the three synchronizer stages, observed end-to-end. The
 test asserts that delta is *exactly* 3, so a chain collapsed to 1 stage or extended to 4 would fail.
 
+## Integration views
+
+`collateral/views/` carries an abstract LEF (423 pins) and per-corner Liberty for ss/tt/ff, so the
+block can be dropped in as a hard macro. The Liberty models contain **519 timing arcs** with `CLK`
+marked `clock : true` — verified, not assumed, because `write_timing_model` silently drops all arcs
+launched by an internally-generated clock. This design has none; see `collateral/README.md`.
+
 ## What was NOT measured
 
 - **Timing impact of metal fill.** OpenRCX has no `dbFill` handling; filled and unfilled SPEF are
