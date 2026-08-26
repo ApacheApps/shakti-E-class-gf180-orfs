@@ -1,0 +1,172 @@
+{
+  "_note": "Violation COUNTS for density rules are representation-dependent and not meaningful: when a density rule fails the deck emits EVERY polygon on that layer, so the count is the metal itself, not a failing region. Use pass/fail and coverage %, not counts.",
+  "runs": {
+    "rstsyncf/drc": {
+      "build": "stock-fill build (TAPEOUT CANDIDATE)",
+      "tables": 53,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "comp": 0,
+        "contact": 0,
+        "contact_split": 0,
+        "dnwell": 0,
+        "dnwell_split": 0,
+        "drc_bjt": 0,
+        "dualgate": 0,
+        "dummy_exclude": 0,
+        "efuse": 0,
+        "esd": 0,
+        "geom": 0,
+        "hres": 0,
+        "ldnmos": 0,
+        "ldnmos_split": 0,
+        "ldpmos": 0,
+        "ldpmos_split": 0,
+        "lres": 0,
+        "lvpwell": 0,
+        "lvpwell_split": 0,
+        "lvs_bjt": 0,
+        "mcell": 0,
+        "metal1": 0,
+        "metal1_split": 0,
+        "metal2": 0,
+        "metal3": 0,
+        "metal4": 0,
+        "metal5": 0,
+        "metaltop": 0,
+        "metaltop_30k": 0,
+        "mim_a": 0,
+        "mim_b": 0,
+        "nat": 0,
+        "nat_split": 0,
+        "nplus": 0,
+        "nwell": 0,
+        "nwell_split": 0,
+        "otp_mk": 0,
+        "poly2": 0,
+        "pplus": 0,
+        "pres": 0,
+        "sab": 0,
+        "sram_3p3": 0,
+        "sram_5p0": 0,
+        "via1": 0,
+        "via1_split": 0,
+        "via2": 0,
+        "via2_split": 0,
+        "via3": 0,
+        "via3_split": 0,
+        "via4": 0,
+        "via4_split": 0,
+        "via5": 0,
+        "ymtp_mk": 0
+      }
+    },
+    "rstsyncf/offgrid": {
+      "build": "stock-fill build (TAPEOUT CANDIDATE)",
+      "tables": 1,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "geom": 0
+      }
+    },
+    "rstsyncf/antenna": {
+      "build": "stock-fill build (TAPEOUT CANDIDATE)",
+      "tables": 1,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "antenna": 0
+      }
+    },
+    "rstsyncf/density": {
+      "build": "stock-fill build (TAPEOUT CANDIDATE)",
+      "tables": 1,
+      "total": 426059,
+      "clean": false,
+      "per_table": {
+        "density": 426059
+      }
+    },
+    "rstsync/drc_flat": {
+      "build": "unfilled build (LVS database)",
+      "tables": 53,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "comp": 0,
+        "contact": 0,
+        "contact_split": 0,
+        "dnwell": 0,
+        "dnwell_split": 0,
+        "drc_bjt": 0,
+        "dualgate": 0,
+        "dummy_exclude": 0,
+        "efuse": 0,
+        "esd": 0,
+        "geom": 0,
+        "hres": 0,
+        "ldnmos": 0,
+        "ldnmos_split": 0,
+        "ldpmos": 0,
+        "ldpmos_split": 0,
+        "lres": 0,
+        "lvpwell": 0,
+        "lvpwell_split": 0,
+        "lvs_bjt": 0,
+        "mcell": 0,
+        "metal1": 0,
+        "metal1_split": 0,
+        "metal2": 0,
+        "metal3": 0,
+        "metal4": 0,
+        "metal5": 0,
+        "metaltop": 0,
+        "metaltop_30k": 0,
+        "mim_a": 0,
+        "mim_b": 0,
+        "nat": 0,
+        "nat_split": 0,
+        "nplus": 0,
+        "nwell": 0,
+        "nwell_split": 0,
+        "otp_mk": 0,
+        "poly2": 0,
+        "pplus": 0,
+        "pres": 0,
+        "sab": 0,
+        "sram_3p3": 0,
+        "sram_5p0": 0,
+        "via1": 0,
+        "via1_split": 0,
+        "via2": 0,
+        "via2_split": 0,
+        "via3": 0,
+        "via3_split": 0,
+        "via4": 0,
+        "via4_split": 0,
+        "via5": 0,
+        "ymtp_mk": 0
+      }
+    },
+    "rstsync/offgrid": {
+      "build": "unfilled build (LVS database)",
+      "tables": 1,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "geom": 0
+      }
+    },
+    "rstsync/antenna": {
+      "build": "unfilled build (LVS database)",
+      "tables": 1,
+      "total": 0,
+      "clean": true,
+      "per_table": {
+        "antenna": 0
+      }
+    }
+  }
+}
