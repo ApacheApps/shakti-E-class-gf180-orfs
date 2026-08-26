@@ -34,6 +34,7 @@ deck.**
 | Off-grid (95 `*_OFFGRID` rules) | **0** | |
 | Antenna (foundry deck) | **0** | cross-checked on two machines |
 | Route DRC · PSM · DRV vs 2.80 ns library limit | 0 · clean · 0 | |
+| **LVS** | **`Circuits match uniquely`** — 28,838 devices / 30,322 nets both sides, 0 unmatched | magic + netgen, unfilled build |
 | Area | 1,519,823 µm² @ 53% utilisation | die 1703.2 × 1703.2 µm |
 | Power | 0.255 W | default activity, **no VCD/SAIF** |
 
@@ -49,8 +50,8 @@ reference open-silicon flow generates fill at chip assembly rather than in the b
 close it inside the block produced geometry that violates the foundry's dummy-metal rules. The full
 reasoning is in [`DISCLAIMERS.md`](DISCLAIMERS.md).
 
-Other open items — EBREAK `mtval` deviation, JTAG disabled, weak formal equivalence, PMP, LVS
-status — are listed there too. **Nothing is hidden in this repository.**
+Other open items — EBREAK `mtval` deviation, JTAG disabled, weak formal equivalence, PMP — are
+listed there too. **Nothing is hidden in this repository.**
 
 ## The reset finding — why this milestone exists
 

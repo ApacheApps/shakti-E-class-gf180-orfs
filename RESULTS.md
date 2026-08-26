@@ -99,4 +99,19 @@ test asserts that delta is *exactly* 3, so a chain collapsed to 1 stage or exten
   blind, not a measurement.
 - **Power under real activity.** No VCD/SAIF; the 0.255 W figure is default-activity.
 - **Silicon.** Nothing here has been fabricated.
-- **LVS** — status is recorded in `DISCLAIMERS.md` §4 from the actual run, not assumed.
+LVS **was** measured and is clean — see below.
+
+## LVS
+
+| metric | layout | schematic |
+|---|---|---|
+| devices | **28,838** | **28,838** |
+| nets | **30,322** | **30,322** |
+| unmatched nets | **0** | |
+| unmatched devices | **0** | |
+| **verdict** | **`Circuits match uniquely`** | |
+
+Flow: **magic extract → netgen compare** (the pairing gf180 ships collateral for), on the **unfilled**
+build. Cell policy disclosed in `reports/LVS_CELL_POLICY.md`; recipe in `docs/LVS_FLOW.md`; full
+report in `reports/lvs_netgen.report`. Benign naming residue (bit-blasted GDS pin labels; well
+net-name differences) is described in `DISCLAIMERS.md` §4.

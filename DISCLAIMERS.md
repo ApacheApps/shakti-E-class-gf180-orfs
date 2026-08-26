@@ -75,30 +75,37 @@ builds a circuit for every cell it finds, and its SPICE reader cannot represent 
 subcircuit, so `fill`/`filltie`/`endcap` can never match. In **flat** extraction there are no
 per-cell circuits at all and the problem does not arise.
 
-### Status as of this release: **UNPROVEN**
+### Status as of this release: **CLEAN** — `Circuits match uniquely`
 
-A KLayout **flat** extraction of the unfilled build succeeded (**307,139 devices, 0 subcircuit
-calls** — flat extraction has no per-cell circuits, so the device-free-subcircuit limitation that
-blocked the hierarchical path does not arise). That netlist was compared against a schematic built
-from the post-route Verilog plus the 27 antenna-diode instances, using netgen with the cell policy in
-`reports/LVS_CELL_POLICY.md`.
-
-netgen reports a mismatch that is **not yet resolved**:
+LVS was run with **magic extraction + netgen comparison** — the flow gf180mcu ships collateral for
+(`libs.tech/magic/gf180mcuC.tech` + `libs.tech/netgen/gf180mcuC_setup.tcl`), on the **unfilled**
+build. Full recipe in `docs/LVS_FLOW.md`; report in `reports/lvs_netgen.report`.
 
 ```
-Circuit 1 (layout)    : 307,139 devices   136,124 nets
-Circuit 2 (schematic) : 317,364 devices   164,922 nets   *** MISMATCH ***
+Number of devices: 28838   |   28838
+Number of nets:    30322   |   30322
+Result: Circuits match uniquely.
 ```
 
-We do **not** know yet whether the residual difference is structural (netlist-construction or
-device-reduction differences between the two tools) or a real connectivity discrepancy. **We are not
-closing that gap by widening the exclusion list** — an LVS whose exclusions are tuned until it passes
-is not a result. Until it is understood, this release states LVS as **unproven**.
+Non-vacuity evidence: device and net counts are **non-zero and equal on both sides**, with
+**0 unmatched nets** and **0 unmatched devices**. The cell policy is disclosed in
+`reports/LVS_CELL_POLICY.md` and is not tuned-to-pass: device-free physical-only cells
+(`fill_*`, `filltie`, `endcap`) are ignored symmetrically, while **`__antenna` is INCLUDED** — 27
+instances × 2 real diodes, all on signal nets, whose exclusion would have hidden 54 devices.
 
-What IS established, and is not a small thing: the design's own logic reconciles — an earlier
-hierarchical run cross-referenced **29,522 subcircuit instances over 92 cell definitions** one-for-one
-with pin order and device counts verified, and **not one mismatching circuit was a logic cell, net or
-device**; every one was a device-free physical-only cell.
+**Benign residue in the report, disclosed rather than dropped:**
+- `Cell pin lists ... altered to match` — GDS labels are bit-blasted (`bus[0]`, `bus[1]`, …) while
+  the Verilog uses vectors. A naming/vectorisation difference; it does not affect the match.
+- `VSUBS | VPW **Mismatch**`, `w_<n>_<n># | VNW **Mismatch**` — well/substrate **net-name**
+  differences (magic's substrate naming vs the PDK cell pin names). Electrically the same node.
+
+**Earlier attempts, and why they failed — this matters for anyone repeating the work.** Three prior
+attempts concluded *"LVS is blocked at the tooling level"*. That was **correct for KLayout's
+hierarchical path and over-broad as stated**: KLayout builds a circuit per cell and its SPICE reader
+cannot represent a **device-free** subcircuit, so gf180's `fill`/`filltie`/`endcap` can never match.
+A fourth attempt then paired **KLayout extraction with netgen comparison** — a mismatched pair, since
+netgen's gf180 setup is written for **magic's** output conventions. It ran 60+ minutes without
+converging (307,139 vs 317,364 devices). Using the intended pair resolved it in ~2 minutes.
 
 Permitted phrasings, choose by evidence:
 - If netgen reports a clean match: *"LVS clean via KLayout flat extraction + netgen compare, with
