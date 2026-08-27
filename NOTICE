@@ -1,5 +1,5 @@
-eclass-gf180-orfs
-Copyright 2026 ApacheApps (eclass-gf180-orfs contributors)
+shakti-E-class-gf180-orfs
+Copyright 2026 ApacheApps (shakti-E-class-gf180-orfs contributors)
 
 This product includes hardware description code derived from and developed by
 third parties, redistributed here under their original licenses. Attribution
@@ -41,7 +41,7 @@ wrapper (rtl/wrapper/), ORFS configuration and SDC constraints (config/), the
 generation, sign-off, DRC/LVS and audit scripts (scripts/), the testbenches
 (sim/), and all documentation -- is:
 
-    Copyright 2026 ApacheApps (eclass-gf180-orfs contributors)
+    Copyright 2026 ApacheApps (shakti-E-class-gf180-orfs contributors)
     Licensed under the Apache License, Version 2.0 (see LICENSE).
 
 ================================================================================
