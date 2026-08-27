@@ -14,7 +14,19 @@ rather than attached as release downloads.
 | `views/eclass_top_tt_025C_5v00.lib` | Liberty, **typical** corner | | 304 KB |
 | `views/eclass_top_ff_n40C_5v50.lib` | Liberty, **fast** corner | | 304 KB |
 
+| `lvs/layout_magic_extracted.spice.gz` | magic's extraction of the unfilled GDS — the LVS layout netlist | 6.3 MB | 639 KB |
+| `lvs/schematic.spice.gz` | the LVS schematic netlist (logic + the 27 antenna diodes) | 3.2 MB | 367 KB |
+
 `SHA256SUMS` covers every file here.
+
+The two `lvs/` netlists are the exact inputs that produced `../reports/lvs_netgen.report`
+(`Circuits match uniquely`), so the comparison can be re-run in seconds without redoing extraction:
+
+```bash
+gunzip -k lvs/*.gz
+PDK_ROOT=<dir containing gf180mcuC> \
+  ../scripts/signoff/lvs/run_netgen.sh lvs/layout_magic_extracted.spice lvs/schematic.spice eclass_top /tmp/lvs
+```
 
 ```bash
 shasum -a 256 -c SHA256SUMS      # verify

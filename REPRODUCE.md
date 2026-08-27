@@ -97,11 +97,21 @@ and derives connectivity from it, so metal fill would extract as tens of thousan
 floating nets. This matches how the reference open-silicon flows sequence it: LVS before fill.
 
 ```bash
-python3 scripts/signoff/v2spice.py <netlist.v> <cell.spice> <out.spice> eclass_top
-openroad -exit scripts/signoff/emit_phys_cells.tcl   # physical-only cell connectivity from the ODB
-python3 scripts/signoff/add_phys_cells.py <out.spice> <physcells> <cell.spice>
-# KLayout flat extraction -> netgen compare (see reports/LVS_CELL_POLICY.md for the cell policy)
+export PDK_ROOT=<dir containing gf180mcuC>
+
+# schematic side: post-route Verilog -> SPICE, plus the 27 antenna diodes from the layout database
+python3 scripts/signoff/v2spice.py <netlist.v> <cell.spice> schematic.spice eclass_top
+openroad -exit scripts/signoff/emit_phys_cells.tcl          # physical-only cell connectivity
+python3 scripts/signoff/add_phys_cells.py schematic.spice <antenna-only physcells> <cell.spice>
+
+# layout side + compare  (magic + netgen -- NOT KLayout; see docs/LVS_FLOW.md)
+scripts/signoff/lvs/run_magic_extract.sh <gds> eclass_top out/
+scripts/signoff/lvs/run_netgen.sh out/layout.spice schematic.spice eclass_top out/
 ```
+
+Requires **magic >= 8.3.411** (distro packages are older and segfault on the gf180 techfile) and
+`netgen-lvs`. Or skip extraction entirely and re-run the compare on the netlists shipped in
+`collateral/lvs/`.
 
 The cell policy is not incidental — read `reports/LVS_CELL_POLICY.md`. In short: device-free
 physical-only cells (`fill_*`, `filltie`, `endcap`) are ignored symmetrically on both netlists, while

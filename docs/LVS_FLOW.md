@@ -48,6 +48,25 @@ all — and still exit 0. Always assert the tech loaded and the output is non-tr
 if {[tech name] != "gf180mcuC"} { puts stderr "FATAL: tech is '[tech name]'"; quit -noprompt }
 ```
 
+## Scripts in this repository
+
+| script | step |
+|---|---|
+| `scripts/signoff/lvs/run_magic_extract.sh` | 1 — magic extraction |
+| `scripts/signoff/lvs/netgen_setup.tcl` | 2a — cell policy + the 5V/6V equate |
+| `scripts/signoff/lvs/run_netgen.sh` | 2 — netgen comparison, with non-vacuity output |
+
+⚠️ `scripts/signoff/run_lvs.sh` is the **KLayout** path and does **not** work for this design; it is
+kept only as documented evidence and is banner-marked as such.
+
+Pre-extracted netlists are in `collateral/lvs/`, so the comparison can be re-run in seconds:
+```bash
+gunzip -k collateral/lvs/*.gz
+PDK_ROOT=<dir containing gf180mcuC> \
+  scripts/signoff/lvs/run_netgen.sh collateral/lvs/layout_magic_extracted.spice \
+                                    collateral/lvs/schematic.spice eclass_top /tmp/lvs
+```
+
 ## Recipe
 
 ```bash

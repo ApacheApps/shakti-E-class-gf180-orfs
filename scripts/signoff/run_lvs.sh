@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+# ============================================================================================
+#  ⚠️  THIS IS THE KLAYOUT LVS PATH, AND IT DOES **NOT** WORK FOR THIS DESIGN.
+#
+#  Retained only as documented evidence of a measured negative result. For the flow that
+#  actually produces a clean LVS, use:  scripts/signoff/lvs/   (magic extract + netgen compare)
+#  and read docs/LVS_FLOW.md.
+#
+#  WHY IT FAILS: in hierarchical mode KLayout builds a circuit for EVERY cell it finds in the
+#  layout, and its SPICE reader cannot create a circuit for a DEVICE-FREE subcircuit. gf180's
+#  fill_*/filltie/endcap have empty .SUBCKT bodies, so they can never match -- the run returns
+#  "Mismatch 10, NoMatch 91" on exactly ANTENNA/ENDCAP/FILLTIE/FILL_*, and the gf180 KLayout deck
+#  ships no flatten/ignore lever. Adding all 80,080 physical cells to the schematic produces a
+#  BYTE-IDENTICAL failure.
+# ============================================================================================
 # designs/eclass_gf180/scripts/run_lvs.sh — real gf180mcu KLayout LVS on the signed-off GDS.
 #
 # This is REAL LVS, not a substitute. It is available here because gf180mcu is an actual foundry
